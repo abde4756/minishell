@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishel.h"
+#include "minishell.h"
 
 char	*ft_strjoin(char *dest, char *src, char c)
 {

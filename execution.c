@@ -15,23 +15,17 @@ int     execute_command(t_cmd *cmd, t_env **env, int status)
         // vérifier si c'est une commande (CMD)
         if(current->arg && current->arg[0])
         {
-            // Gérer les redirections
-            if(current->rdr && (current->rdr->type == RDRIN || 
-                         current->rdr->type == RDROUT || 
-                         current->rdr->type == APPND || 
-                         current->rdr->type == HEREDOC))
-            {
-                status = execute_with_redirection(current, env, status);
-            }
             // Gérer les pipes (à implémenter plus tard)
-            else if(current->rdr && current->rdr->type == PIPE)
-            {
-                // TODO: Implémenter execute_with_pipe
-                // status = execute_with_pipe(current, env, status);
-                printf("Pipes non implémentés pour le moment\n");
-                status = -1;
-            }
-            // Commande simple
+            if(current->next)
+                status = execute_with_pipe(current, env, status);
+            // Gérer les redirections
+            else if(current->rdr && (current->rdr->type == RDRIN || 
+                current->rdr->type == RDROUT || 
+                current->rdr->type == APPND || 
+                current->rdr->type == HEREDOC))
+                {
+                    status = execute_with_redirection(current, env, status);
+                }
             else
             {
                 if(is_builin_command(current->arg[0]))
@@ -115,13 +109,12 @@ int     open_check_file(t_rdr *red)
 int     execute_simple_command(t_cmd *cmd, t_env **env, int status)
 {
     pid_t   pid;
-    int     exit_status;
     char    *path = NULL;
 
     if(!env || !cmd)
         return(-1);
     if(is_builin_command(cmd->arg[0]))
-        return execute_builtin(cmd, env, status);
+        return (execute_builtin(cmd, env, status));
     else
     {
         pid = fork();
@@ -131,19 +124,30 @@ int     execute_simple_command(t_cmd *cmd, t_env **env, int status)
         {
             signal(SIGINT, SIG_DFL);
             signal(SIGQUIT, SIG_DFL);
-            if(execvp(cmd->arg[0], cmd->arg) == -1)
-                perror("execvp"), exit(127);
+            path = get_path_cmd(cmd->arg[0]);
+            if(!path)
+            {
+                fprintf(stderr, "Command not found: %s\n", cmd->arg[0]);
+                exit(127);
+            }
+            if(execve(path, cmd->arg, env) == -1)
+                perror("execve"), free(path), exit(127);
         }
         else if(pid > 0) //parent
-            wait(&exit_status);
+            waitpid(pid, &status, 0);
     }
-    return(1);
+    if(path)
+        free(path);
+    return(status);
 }
 
 int     execute_builtin(t_cmd *cmd, t_env **env , int last_code)
 {
-    int     status; // 
+    int     status; //
 
+    status = last_code; // initialiser le status avec le dernier code de sortie
+    if(!cmd || !cmd->arg || !env)
+        return(-1);
     if(ft_strcmp(cmd->arg[0], "echo") == 0)
         status = echo_fonc(cmd->arg);
     else if(ft_strcmp(cmd->arg[0], "cd") == 0)

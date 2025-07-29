@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 
-#include "minishel.h"
+#include "minishell.h"
 
 
 int	word_count(char const *s, char c)

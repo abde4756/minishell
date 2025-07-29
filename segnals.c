@@ -1,4 +1,4 @@
-#include "minishel.h"
+#include "minishell.h"
 
 void    handler_ctrl_c(int sig)
 {
