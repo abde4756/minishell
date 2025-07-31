@@ -2,13 +2,22 @@
 
 int     env_fonc(char **arg, t_env *env)
 {
-    char *name_value;
-    char *temp;
-
     if(!env || !arg)
         return(-1);
     if(arg[1])
+    {
+        printf("env: %s: No such file or directory\n", arg[1]);
         return(-1);
+    }
+    status = help_env_fonc(env);
+    return(0);
+}
+
+int     help_env_fonc(t_env *env)
+{
+    char *name_value;
+    char *temp;
+
     while (env != NULL)
     {   
         temp = str_join(env->name, "=");
@@ -27,5 +36,5 @@ int     env_fonc(char **arg, t_env *env)
         free(name_value);
         env = env->next;
     }
-    return(0);
+    return = 0; 
 }

@@ -9,7 +9,25 @@ int     echo_fonc(char **arg)
 
     if(!arg || !arg[0])
         return(-1);
-    // virifier si il y'a fflag -n ou plusieur -nn ou -n -n 
+    // virifier si il y'a fflag -n ou plusieur -nn ou -n -n
+    echo_check_n(arg, flag_newline, i);
+    while (arg[i])
+    {
+        printf("%s", arg[i]);
+        if(arg[i + 1])
+            printf(" "); // si il y'a un autre arg
+        i++;
+    }
+    if(flag_newline)
+        printf("\n");
+    return(0);
+}
+
+void    echo_check_n(char **arg, int flag_newline, int i)
+{
+    int     j;
+    int     flag_valid;
+
     while(arg[i] && arg[i][0] == '-' && arg[i][1] && arg[i][1] == 'n')
     {
         j = 1;
@@ -31,14 +49,4 @@ int     echo_fonc(char **arg)
         else
             break; // on va traiter comme un argement normale;
     }
-    while (arg[i])
-    {
-        printf("%s", arg[i]);
-        if(arg[i + 1])
-            printf(" "); // si il y'a un autre arg
-        i++;
-    }
-    if(flag_newline)
-        printf("\n");
-    return(0);
 }

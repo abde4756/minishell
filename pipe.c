@@ -178,21 +178,17 @@ char   *get_path_cmd(char *cmd)
     
     path = get_path(env);
     if(!path)
-    {
-        printf("PATH not found\n");
-        return (NULL);
-    }
+        return (printf("PATH not found\n"), NULL);
     arg = ft_split(path, ':');
     if(!arg)
-    return (NULL);
+        return (NULL);
     i = 0;
     while (arg[i])
     {
         if(access(arg[i], X_OK) == 0)
         {
             directory = arg[i];
-            f_free(arg);
-            return (directory);
+            return (f_free(arg) ,directory);
         }
         i++;
     }

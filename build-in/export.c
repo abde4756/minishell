@@ -4,8 +4,7 @@ int     fonc_export(char **arg,  t_env **env)
 {
     int     i;
     int     j;
-    char    *name;
-    char    *value;
+    int     status;
 
     if(!arg)
         return(-1);
@@ -18,43 +17,12 @@ int     fonc_export(char **arg,  t_env **env)
     while (arg[i])
     {   
         if(has_equal_sign(arg[i])) // si on '=' (var=value)
-        {
-            name = get_var_name(arg[i]);
-            value = get_var_value(arg[i]);
-            if(!is_valid_name(name))
-            {
-                export_error(name);
-                free(name);
-                free(value);
-                return(-1);
-            } 
-            if(check_var_exist_env(*env, name) == -1)
-                add_back_env(env, name, value, (idx_nod(*env) + 1));
-            else
-                updat_env(env, name, value);
-            free(name), free(value);
-        }
+            status = var_with_equal(arg, i);
         else
-        {
-            if(!is_valid_name(arg[i]))
-            {
-                export_error(arg[i]);
-                return(-1);
-            }
-            name = get_var_name(arg[i]);
-            if(check_var_exist_env(*env, name) == -1)
-            {
-                value = get_var_value(arg[i]);
-                add_back_env(env, name, value, (idx_nod(*env) + 1));
-                free(value);
-            }
-            else
-                mak_as_export(env, arg[i]);
-            free(name);
-        }
+            var_no_value(arg, i);
         i++;
     }
-    return(0);
+    return(status);
 }
 
 char    *get_var_name(char *str)
@@ -179,21 +147,17 @@ void    updat_env(t_env *env, char *name, char *value)
 void    add_double_quotes(char *value, char *name, t_env *env)
 {
     char    *new_str;
-    int     i;
-    int     j;
-
+    int     i, j;
+    
     if (!value || !name || !env)
         return;
     new_str = malloc(ft_strlen(value) + 3);
     if (!new_str)
         return;
     new_str[0] = '"';
-    i = 1;
-    j = 0;
+    (1) &&(i = 1, j = 0);
     while (value[j])
-    {
         new_str[i++] = value[j++];
-    }
     new_str[i++] = '"';
     new_str[i] = '\0';
     while (env)

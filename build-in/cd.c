@@ -3,57 +3,26 @@
 int     fonc_cd(char **arg, t_env *env)
 {
     char    *tmp = NULL;
-    char   *current_getcwd;
+    char    *current_getcwd;
+    char    *pwd_now;
     int     nombre_arg;
+    int     staus;
 
     if(!arg)
         return(-1);
     nombre_arg = get_nbr_arg(arg);
+    pwd_now = getcwd(NULL, 0);
     if(nombre_arg == 1)
-    {
-        while (env)
-        {
-            if(str_cmp("HOME", env->name) == 0)
-            {
-                tmp = env->value;
-                break;
-            }
-            env = env->next;
-        }
-        if(tmp != NULL)
-        {
-            if(chdir(tmp) == -1)
-            {
-                printf("cd: no such file or directory: %s\n", tmp);
-                return(-1);
-            }
-            current_getcwd = getcwd(NULL, 0);
-            update_env(&env, "PWD", current_getcwd);
-            free(current_getcwd);
-        }
-        else
-        {
-            printf("cd: HOME not set\n");
-            return(-1);
-        }
-    }
+        staus = cd_zero_arg(tmp, pwd_now, current_getcwd, env);
     else if(nombre_arg == 2)
-    {
-        if (chdir(arg[1]) == -1)
-        {
-            printf("cd: no such file or directory: %s\n", arg[1]);
-            return(-1);
-        }
-        current_getcwd = getcwd(NULL, 0);
-        update_env(&env, "PWD", current_getcwd);
-        free(current_getcwd);
-    }
+        staus = cd_with_arg(arg, pwd_now, current_getcwd, env);
     else
     {
         printf("cd: too many arguments\n");
-        return(-1);
+        return(free(pwd_now), -1);
     }
-    return(0);
+    free(pwd_now);
+    return(status);
 }
 
 void    update_env(t_env **env, const char *name, const char *value)

@@ -15,8 +15,13 @@ int     exit_fonc(char **arg, int last_code)
     }
     i = 0;
     if(arg[1])
-    {
-        if(arg[1][i] == '-' || arg[1][i] == '+')
+        help_exit_fonc(arg, exit_code);
+    exit(exit_code);
+}
+
+void    help_exit_fonc(char **arg, int exit_code)
+{
+     if(arg[1][i] == '-' || arg[1][i] == '+')
             i++;
         if(!arg[1][i])
         {
@@ -38,6 +43,4 @@ int     exit_fonc(char **arg, int last_code)
             exit_code = 256 + (exit_code % 256);
         else
             exit_code = exit_code % 256;
-    }
-    exit(exit_code);
 }
